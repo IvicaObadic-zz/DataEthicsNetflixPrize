@@ -8,7 +8,7 @@ import pandas as pd
 # Define the format
 reader = Reader(line_format='user item rating timestamp', sep=',',skip_lines=1)
 # Load the data from the file using the reader format
-data = Dataset.load_from_file('../data/preprocessed/data_surprise.csv', reader=reader)
+data = Dataset.load_from_file('../data/preprocessed/dataset_cleaned.csv', reader=reader)
 
 def try_recom_algorithm(data, algo, filename, n_splits=5):
     """
@@ -24,7 +24,7 @@ def try_recom_algorithm(data, algo, filename, n_splits=5):
     kf = KFold(n_splits=n_splits)
     i=1
 
-    file = open("../results/"+filename+".txt","w+")
+    file = open("../results_surprise/"+filename+".txt","w+")
     avg_rmse = 0
     avg_mae = 0
     for trainset, testset in kf.split(data):
@@ -37,6 +37,7 @@ def try_recom_algorithm(data, algo, filename, n_splits=5):
         predictions = algo.test(testset)
 
         # Compute and print Root Mean Squared Error
+        # and Mean Absolute Error
         rmse = accuracy.rmse(predictions, verbose=True)
         mae = accuracy.mae(predictions, verbose=True)
         file.write("RMSE: %f\n" % (rmse))
@@ -45,6 +46,7 @@ def try_recom_algorithm(data, algo, filename, n_splits=5):
         avg_rmse += rmse
         avg_mae += mae
 
+    # Calculate average RMSE and MAE
     avg_rmse = avg_rmse / n_splits
     avg_mae = avg_mae / n_splits
     file.write("Avg. RMSE: %f\n" % (avg_rmse))
@@ -52,15 +54,33 @@ def try_recom_algorithm(data, algo, filename, n_splits=5):
     file.close()
 
 # Uncomment to run the algorithms
-"""
-try_recom_algorithm(data, SlopeOne(), "slope_one")
-try_recom_algorithm(data, KNNBaseline(), "knn_baseline")
-try_recom_algorithm(data, KNNBasic(), "knn_basic")
-try_recom_algorithm(data, KNNWithMeans(), "knn_means")
+
+#try_recom_algorithm(data, SlopeOne(), "slope_one")
 try_recom_algorithm(data, NMF(), "nmf")
 try_recom_algorithm(data, NormalPredictor(), "random")
 try_recom_algorithm(data, BaselineOnly(), "baseline")
 try_recom_algorithm(data, CoClustering(), "co_clustering")
 try_recom_algorithm(data, SVD(), "svd")
 try_recom_algorithm(data, SVDpp(), "svd_pp")
-"""
+# NMF biased (use baselines)
+try_recom_algorithm(data, NMF(biased = True), 'nmf_biased')
+
+
+
+#bsl_options = {'method': 'als',
+ #              'reg_u': 12,
+ #              'reg_i':5
+ #              }
+#try_recom_algorithm(data, BaselineOnly(bsl_options=bsl_options), "baseline_opt_2", n_splits=5)
+
+#bsl_options = {'method': 'als',
+ #              'reg_u': 15,
+  #             'reg_i':10
+   #            }
+#try_recom_algorithm(data, BaselineOnly(bsl_options=bsl_options), "baseline_opt_3", n_splits=5)
+
+#bsl_options = {'method': 'als',
+ #              'reg_u': 20,
+  #             'reg_i':5
+   #            }
+#try_recom_algorithm(data, BaselineOnly(bsl_options=bsl_options), "baseline_opt_4", n_splits=5)

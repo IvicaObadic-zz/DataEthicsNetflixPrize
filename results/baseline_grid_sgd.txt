@@ -1,2 +1,0 @@
-RMSE: 0.984363
-Best params:{'bsl_options': {'learning_rate': 0.0005, 'reg': 0.01, 'n_epochs': 25}}
