@@ -1,0 +1,3 @@
+RMSE: 0.979333
+
+Best params:{'bsl_options': {'reg_i': 5, 'reg_u': 10, 'n_epochs': 20}}
