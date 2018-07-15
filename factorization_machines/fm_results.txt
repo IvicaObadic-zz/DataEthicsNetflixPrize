@@ -1,0 +1,17 @@
+Results for configuration: Iterations = 10, num_factors = 10
+RMSE for fold 1 is 1.0601704823474831
+RMSE for fold 2 is 1.068123621378669
+RMSE for fold 3 is 1.1028054291536191
+RMSE for fold 4 is 1.200272781971228
+RMSE for fold 5 is 1.135969638618473
+Mean RMSE on Cross validation = 1.1134683906938945
+###########################
+Results for configuration: Iterations = 20, num_factors = 10
+RMSE for fold 1 is 1.07012992452271
+RMSE for fold 2 is 1.0462881739124392
+RMSE for fold 3 is 1.1709450181847714
+RMSE for fold 4 is 1.0583225336082525
+RMSE for fold 5 is 1.2119799628745258
+Mean RMSE on Cross validation = 1.1115331226205398
+###########################
+

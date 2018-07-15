@@ -2,6 +2,8 @@ from imdb import IMDb
 import util
 import pandas as pd
 
+NUM_MOST_RATED_MOVIES_TO_TAKE = 20
+
 def enhance_dataset_with_movie_year_and_titles():
     '''
     Enhances the sample dataset of (user_id, movie_id, rating, timestamp)
@@ -85,33 +87,53 @@ def crawl_imdb():
 
     file_to_write.close()
 
-def merge_dataset_with_movie_genres():
+def merge_dataset_with_movie_genres(include_k_most_rated_movies = True):
     '''
     Merges the files 'dataset_with_movie_details.csv' with file 'movie_details_enhanced.csv'
     in order to combine the crawled movie genres from IMDB and create the final dataset that will be used by
     Factorization Machines algorithm.
     The file 'dataset_enhanced.csv' which contains the final dataset used for further analysis
-    consists of the following columns: user_id, movie_id, rating, timestamp, year_of_release, genres
+    consists of the following columns:
+        user_id, movie_id, rating, timestamp, year_of_release, Genre 1, ..., Genre N (Genres are binary columns)
+
+    :param include_k_most_rated_movies: whether the final mf dataset should consist only of the K most rated movies.
     :return:
     '''
 
     # Drop the movies from the sampled dataset for which genres are not found in IMDB (genres = 'None').
-    movie_details_enhanced = pd.read_csv(util.PREPROCESSED_DATA_PATH + 'movie_details_enhanced.csv', sep=',', encoding='windows-1252')
+    movie_details_enhanced = pd.read_csv(util.PREPROCESSED_DATA_PATH + 'movie_details_enhanced.csv',
+                                         sep=',',
+                                         encoding='windows-1252',
+                                         header=None)
     movie_details_enhanced.columns = ['movie_id', 'movie_title', 'genres']
     movie_details_enhanced = movie_details_enhanced[movie_details_enhanced.genres != 'None']
     print('Number of movies for which genres are found in IMDB: ' + str(movie_details_enhanced.shape[0]))
 
-    # Merge the genres in the sampled dataset for each movie
+
     dataset_with_movie_details = pd.read_csv(util.PREPROCESSED_DATA_PATH + 'dataset_with_movie_details.csv', sep=',')
+    dataset_with_movie_details['timestamp'] = dataset_with_movie_details['timestamp'].str[:4].astype('int32')
+    dataset_with_movie_details['years_diff'] = 0.00001 + dataset_with_movie_details['timestamp'] - \
+                                               dataset_with_movie_details['year_of_release']
+    # Subset by using only the k most rated movies in the dataset.
+    if include_k_most_rated_movies:
+        k_most_rated_movies = dataset_with_movie_details['movie_id'].value_counts()[0:NUM_MOST_RATED_MOVIES_TO_TAKE]
+        movie_details_enhanced = movie_details_enhanced[movie_details_enhanced['movie_id'].isin(k_most_rated_movies.index)]
+
+    #Create binary columns of genres for each movie and merge with the movie details dataframe
+    genres_as_binary_matrix = movie_details_enhanced['genres'].str.get_dummies(';')
+    # print(genres_as_binary_matrix.sum().divide(genres_as_binary_matrix.sum().sum() * 1.0))
+    movie_details_enhanced = pd.concat([movie_details_enhanced, genres_as_binary_matrix], axis=1)
+
+    # Merge the genres in the sampled dataset for each movie
     merged_data = pd.merge(dataset_with_movie_details, movie_details_enhanced, on='movie_id')
     print('Number of instances in the merged dataset for matrix factorization algorithm: ' + str(merged_data.shape[0]))
 
     # Subset the columns of interest
-    merged_data = merged_data[['user_id', 'movie_id', 'rating', 'timestamp', 'year_of_release', 'genres']]
+    genre_column_names = [genre for genre in genres_as_binary_matrix.columns]
+    merged_data = merged_data[['user_id', 'movie_id', 'rating', 'years_diff'] + genre_column_names]
     merged_data.to_csv(util.PREPROCESSED_DATA_PATH + 'fm_dataset.csv', sep=',')
 
-
 if __name__ == '__main__':
-    #enhance_dataset_with_movie_year_and_titles()
-    #crawl_imdb()
+    enhance_dataset_with_movie_year_and_titles()
+    crawl_imdb()
     merge_dataset_with_movie_genres()

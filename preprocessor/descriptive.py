@@ -52,4 +52,5 @@ def movie_count_user_count(filename):
     print(data['user_id'].value_counts(ascending=True))
 
 if __name__ == '__main__':
+    movie_rating_count_descriptives(plot_hist=False)
     movie_count_user_count(util.PREPROCESSED_DATA_PATH + 'dataset.csv')
