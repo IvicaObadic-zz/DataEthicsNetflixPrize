@@ -1,0 +1,2 @@
+RMSE: 1.008003
+Best params:{'lr_all': 0.007, 'reg_all': 0.05, 'n_factors': 10}

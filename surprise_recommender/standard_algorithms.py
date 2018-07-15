@@ -4,11 +4,17 @@ from surprise import SVD, SVDpp, SlopeOne, KNNBasic, KNNBaseline, KNNWithMeans, 
 from surprise import model_selection
 from surprise import accuracy
 import pandas as pd
+import numpy as np
 
-# Define the format
-reader = Reader(line_format='user item rating timestamp', sep=',',skip_lines=1)
-# Load the data from the file using the reader format
-data = Dataset.load_from_file('../data/preprocessed/dataset_cleaned.csv', reader=reader)
+# Read options for 1M and 5M datasets
+#reader1M = Reader(line_format='user item rating timestamp', sep=',',skip_lines=1)
+#data = Dataset.load_from_file('../data/preprocessed/dataset_cleaned.csv', reader=reader1M)
+
+# Read options for 163K dataset
+reader163K = Reader(line_format='user item rating', sep=',',skip_lines=1)
+data163K = pd.read_csv("../data/preprocessed/fm_dataset.csv")
+data163K = data163K[['user_id','movie_id','rating']]
+data = Dataset.load_from_df(data163K, reader=reader163K)
 
 def try_recom_algorithm(data, algo, filename, n_splits=5):
     """
@@ -24,7 +30,7 @@ def try_recom_algorithm(data, algo, filename, n_splits=5):
     kf = KFold(n_splits=n_splits)
     i=1
 
-    file = open("../results_surprise/"+filename+".txt","w+")
+    file = open("../results_surprise_163K/"+filename+".txt","w+")
     avg_rmse = 0
     avg_mae = 0
     for trainset, testset in kf.split(data):
@@ -36,8 +42,7 @@ def try_recom_algorithm(data, algo, filename, n_splits=5):
         algo.fit(trainset)
         predictions = algo.test(testset)
 
-        # Compute and print Root Mean Squared Error
-        # and Mean Absolute Error
+        # Compute and print Root Mean Squared Error and Mean Absolute Error
         rmse = accuracy.rmse(predictions, verbose=True)
         mae = accuracy.mae(predictions, verbose=True)
         file.write("RMSE: %f\n" % (rmse))
@@ -53,9 +58,8 @@ def try_recom_algorithm(data, algo, filename, n_splits=5):
     file.write("Avg. MAE: %f\n" % (avg_mae))
     file.close()
 
-# Uncomment to run the algorithms
 
-#try_recom_algorithm(data, SlopeOne(), "slope_one")
+try_recom_algorithm(data, SlopeOne(), "slope_one")
 try_recom_algorithm(data, NMF(), "nmf")
 try_recom_algorithm(data, NormalPredictor(), "random")
 try_recom_algorithm(data, BaselineOnly(), "baseline")
@@ -64,23 +68,3 @@ try_recom_algorithm(data, SVD(), "svd")
 try_recom_algorithm(data, SVDpp(), "svd_pp")
 # NMF biased (use baselines)
 try_recom_algorithm(data, NMF(biased = True), 'nmf_biased')
-
-
-
-#bsl_options = {'method': 'als',
- #              'reg_u': 12,
- #              'reg_i':5
- #              }
-#try_recom_algorithm(data, BaselineOnly(bsl_options=bsl_options), "baseline_opt_2", n_splits=5)
-
-#bsl_options = {'method': 'als',
- #              'reg_u': 15,
-  #             'reg_i':10
-   #            }
-#try_recom_algorithm(data, BaselineOnly(bsl_options=bsl_options), "baseline_opt_3", n_splits=5)
-
-#bsl_options = {'method': 'als',
- #              'reg_u': 20,
-  #             'reg_i':5
-   #            }
-#try_recom_algorithm(data, BaselineOnly(bsl_options=bsl_options), "baseline_opt_4", n_splits=5)
