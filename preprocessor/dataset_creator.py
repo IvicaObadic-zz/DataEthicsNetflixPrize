@@ -57,7 +57,7 @@ def create_initial_dataset():
 
 def clean_sampled_dataset(filename = util.PREPROCESSED_DATA_PATH + 'dataset.csv'):
     '''
-    Cleanes the dataset by removing instances of movies which have less than 3 ratings in the sampled data
+    Cleanes the dataset by removing instances of movies and users which have less than 3 ratings in the sampled data.
 
     :param filename: the dataset file
     :return:

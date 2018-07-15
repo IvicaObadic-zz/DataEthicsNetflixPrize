@@ -24,8 +24,8 @@ kf = KFold(n_splits=5)
 splits = kf.split(X)
 file_to_write = open('fm_results.txt', mode='w')
 
-fm_num_iterations = [25]
-num_factors = [11]
+fm_num_iterations = [10, 25, 50]
+num_factors = [10, 25, 20]
 
 for fm_iteration in fm_num_iterations:
     for factor in num_factors:
