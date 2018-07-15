@@ -2,13 +2,14 @@
 
 Team: Ivica Obadic & Angela Josifovska
 
-Recommendation system as part of univeristy project on the Netflix dataset implemented in Python. 
+Recommendation system as part of univeristy project on the Netflix dataset implemented in Python 3. 
 
-Different recommendation systems algorithms are explored and compared with the Matrix Factorization method. 
+Different recommendation systems algorithms are explored and compared with the novel Factorization Machines method. 
 
-Libraries used for implementation of algorithms:
+Libraries used for implementation of the algorithms:
 * Surprise: http://surpriselib.com/
-* pyfm: 
+* pyfm: https://github.com/coreylynch/pyFM
+* IMDbpy: https://github.com/alberanid/imdbpy
 
 ------------------------------
 
