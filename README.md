@@ -16,9 +16,11 @@ Libraries used for implementation of the algorithms:
 ## Project structure
 * **data** - folder containing the preprocessed datasets used for the analysis. As the datasets were too large for upload on GitHub, they have to be manually copied in this folder, before running the scripts. If one wants to generate the preprocessed datasets, the original movie files of the netflix dataset should be copied to the folder training_set under this data directory.
 * **preprocessor**
-    * ```dataset_creator.py```
+    * ```dataset_creator.py``` - This script subsets the original netflix dataset (17 700 movie files) by first discarding the movies which have less than 100 ratings and then randomly sampling 5% of the ratings for each movie. The resulting dataset is written as csv file under the folder data/preprocessed. This functionality is implemented in the ```create_initial_dataset()``` function in the script.
+Additionally, this script contains the function ```clean_sampled_dataset()``` which subsets the dataset created with the ```create_initial_dataset()``` function by removing instances for users and items which have less than 3 ratings in the sampled dataset. The subsetted dataset is written as csv file under the folder data/preprocessed.
     * ```dataset_enchanser.py```
     * ```descriptive.py```
+    * ```util.py```
 * **factorization_machines**:
     * ```fm_algorithm.py``` - 
     * ```fm_results.txt``` - 
