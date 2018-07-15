@@ -14,7 +14,7 @@ Libraries used for implementation of the algorithms:
 ------------------------------
 
 ## Project structure
-* **data** - folder containing the datasets used for the analysis. As the datasets were too large for upload on GitHub, they have to be manually copied in this folder, before running the scripts.
+* **data** - folder containing the preprocessed datasets used for the analysis. As the datasets were too large for upload on GitHub, they have to be manually copied in this folder, before running the scripts. If one wants to generate the preprocessed datasets, the original movie files of the netflix dataset should be copied to the folder training_set under this data directory.
 * **preprocessor**
     * ```dataset_creator.py```
     * ```dataset_enchanser.py```
